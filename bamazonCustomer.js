@@ -73,21 +73,60 @@ function promptCustomer(){
             var itemCost;
             var total;
             var updateQuantity;
-            connection.query("SELECT * FROM products", function(err, res) {
-                for (var i = 0; i < res.length; i++){
+            if (itemNum <= itemLength && itemNum > 0){
 
-                    if(itemNum === res[i].item_id){
-                        currentQuantity = res[i].stock_quantity;
-                        itemCost = res[i].price;
-                        itemName = res[i].product_name;
+                connection.query("SELECT * FROM products", function(err, res) {
+
+                    for (var i = 0; i < res.length; i++){
+
+                        if(itemNum === res[i].item_id){
+                            currentQuantity = res[i].stock_quantity;
+                            itemCost = res[i].price;
+                            itemName = res[i].product_name;
+                        }
                     }
-                }
-                total = itemCost * quantity;
-                updateQuantity = currentQuantity - quantity;
-                update()
-            });
-            function update(){
-                if (itemNum <= itemLength && itemNum > 0){
+                    
+                    confirmPurchase()
+                });
+
+                function confirmPurchase(){
+                    if(quantity < currentQuantity && quantity > 0){
+
+                        total = itemCost * quantity;
+
+                        inquirer.prompt([
+                            {
+                                type: "confirm",
+                                name:"confirmPurchase",
+                                message: "You are purchasing " + quantity + " " + itemName + ". Your order total is " + total + ". Would you like to complete the purchase?"
+                            }
+                        ]).then(function(response){
+                            if (response.confirmPurchase){
+                                update();
+                            } else{
+                                promptCustomer();
+                            };
+                        });
+
+                    } else {
+                        
+                        inquirer.prompt([
+                            {
+                                type: "input",
+                                name: "changeQuantity",
+                                message: "You have entered an invalid quantity, please change your quantity."
+                            }
+                        ]).then(function(response){
+                            quantity = response.changeQuantity;
+                            confirmPurchase();
+                        });
+                    };
+                };
+
+
+
+                function update(){
+                    updateQuantity = currentQuantity - quantity;
 
                     connection.query(
                         "UPDATE products SET ? WHERE ?",
@@ -102,18 +141,34 @@ function promptCustomer(){
                         function(err, res) {
 
                             if (err) throw err;
-
-                            console.log("You are purchasing " + quantity + " " + itemName + ". Your order total is " + total + ".")
-            
+                            console.log("Your purchase is successful.")
+                            shopAgain()
                     });
+                }
 
-                } else {
+            } else {
 
-                    console.log("item not found, select a different item");
-                    promptCustomer();
+                console.log("item not found, select a different item");
+                promptCustomer();
 
-                };
-            }
+            };
+
         });
 
+}
+
+function shopAgain(){
+    inquirer.prompt([
+        {
+            type: "confirm",
+            name: "shopContinue",
+            message: "would you like to continue shopping?"
+        }
+    ]).then(function(response){
+        if (response.shopContinue){
+            displayItems();
+        } else{
+            connection.end();
+        }
+    });
 }
