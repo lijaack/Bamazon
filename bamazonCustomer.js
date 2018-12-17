@@ -26,10 +26,11 @@ function displayItems(){
     connection.query("SELECT * FROM products", function(err, res) {
 
         if (err) throw err;
+        
         var table = new cliTable({
 
-            head:["item id", "product name", "department name","price", "stock quanity"]
-            
+            head:["item id", "product name", "department name","price", "stock quantity"]
+
         })
 
         for(var i = 0; i < res.length; i++){
@@ -50,38 +51,69 @@ function displayItems(){
 
 function promptCustomer(){
 
-    inquirer.prompt([
+        inquirer.prompt([
 
-        {
-            type: 'input',
-            name: 'item',
-            message: 'Enter the item id of the item you would like to purchase'
-        },
-        {
-            type: 'input',
-            name: 'quantity',
-            message: 'How many would you like to purchase?'
-        }
+            {
+                type: 'input',
+                name: 'item',
+                message: 'Enter the item id of the item you would like to purchase'
+            },
+            {
+                type: 'input',
+                name: 'quantity',
+                message: 'How many would you like to purchase?'
+            }
 
-    ]).then(function(response){
+        ]).then(function(response){
 
-        var itemNum = response.item;
-        var quanity = response.quanity;
-
-        console.log(itemLength);
-
-        if (itemNum < itemLength && itemNum > 0){
-
+            var itemNum = parseInt(response.item);
+            var quantity = parseInt(response.quantity);
+            var itemName;
+            var currentQuantity;
+            var itemCost;
+            var total;
+            var updateQuantity;
             connection.query("SELECT * FROM products", function(err, res) {
+                for (var i = 0; i < res.length; i++){
 
+                    if(itemNum === res[i].item_id){
+                        currentQuantity = res[i].stock_quantity;
+                        itemCost = res[i].price;
+                        itemName = res[i].product_name;
+                    }
+                }
+                total = itemCost * quantity;
+                updateQuantity = currentQuantity - quantity;
+                update()
             });
+            function update(){
+                if (itemNum <= itemLength && itemNum > 0){
 
-        } else {
+                    connection.query(
+                        "UPDATE products SET ? WHERE ?",
+                        [
+                            {
+                                stock_quantity: updateQuantity
+                            },
+                            {
+                                item_id: itemNum
+                            }
+                        ],
+                        function(err, res) {
 
-            console.log("item not found, select a different item");
-            promptCustomer();
+                            if (err) throw err;
 
-        };
-    });
+                            console.log("You are purchasing " + quantity + " " + itemName + ". Your order total is " + total + ".")
+            
+                    });
+
+                } else {
+
+                    console.log("item not found, select a different item");
+                    promptCustomer();
+
+                };
+            }
+        });
 
 }
