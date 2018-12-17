@@ -73,6 +73,7 @@ function promptCustomer(){
             var itemCost;
             var total;
             var updateQuantity;
+            
             if (itemNum <= itemLength && itemNum > 0){
 
                 connection.query("SELECT * FROM products", function(err, res) {
@@ -85,7 +86,7 @@ function promptCustomer(){
                             itemName = res[i].product_name;
                         }
                     }
-                    
+
                     confirmPurchase()
                 });
 
