@@ -26,7 +26,7 @@ function promptManager(){
           type: "list",
           name: "doWhat",
           message: "What would you like to do?",
-          choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
+          choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "exit console"]
       }
   ]).then(function(response){
      
@@ -43,6 +43,8 @@ function promptManager(){
       case "Add New Product":addNewProduct();
       break;
 
+      case "exit console": connection.end();
+      break;
     }
   });
 }
@@ -67,14 +69,70 @@ function displayItems(){
         }    
 
         console.log(table.toString())  
+        inquirer.prompt([
+          {
+              type: "confirm",
+              name: "doAgain",
+              message: "Here are the current products for sale, would you like to do something else?",
+  
+          }
+        ]).then(function(response){
+          if (response.doAgain){
+            promptManager();
+          } else {
+            connection.end();
+          };
 
-    });
+        });
+
+      });
 
 };
 
 function displayLow(){
+  console.log("hello")
+  connection.query("SELECT * FROM products WHERE stock_quantity < 20", function(err, res) {
+
+    if (err) throw err;
+    
+    var table = new cliTable({
+
+        head:["item id", "product name", "department name","price", "stock quantity"]
+
+    })
+
+    for(var i = 0; i < res.length; i++){
+        
+        table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity])
+        
+    }    
+
+    console.log(table.toString())  
+
+    inquirer.prompt([
+      {
+          type: "confirm",
+          name: "doAgain",
+          message: "Here are the items with less than 20 quantity left, would you like to do something else?",
+
+      }
+    ]).then(function(response){
+      if (response.doAgain){
+        promptManager();
+      } else {
+        connection.end();
+      };
+
+    });
+
+  });
+
 
 }
+
+
+
+
 
 function addInventory(){
 
