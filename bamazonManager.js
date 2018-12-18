@@ -97,7 +97,7 @@ function displayItems(){
 function displayLow(){
   console.log("hello")
 
-  //selects all from database and displays a table
+  //========================================== selects all from database and displays a table ==========================================
   connection.query("SELECT * FROM products WHERE stock_quantity < 20", function(err, res) {
 
     if (err) throw err;
@@ -116,7 +116,7 @@ function displayLow(){
 
     console.log(table.toString())  
 
-//ask if the manager wants to do anything else
+//========================================== ask if the manager wants to do anything else ==========================================
     inquirer.prompt([
       {
           type: "confirm",
@@ -164,7 +164,7 @@ function addInventory(){
     }    
     console.log(table.toString())  
 
-// ask the manager which item he wants to select and how many items he would like to add
+// ==========================================ask the manager which item he wants to select and how many items he would like to add=====================
 
     inquirer.prompt([
       {
@@ -186,7 +186,7 @@ function addInventory(){
         
         if (itemNum <= itemLength && itemNum > 0){
 
-// confirms the manager chose the right item and added the right quantity
+// ========================================== confirms the manager chose the right item and added the right quantity ==========================================
             connection.query("SELECT * FROM products", function(err, res) {
 
                 for (var i = 0; i < res.length; i++){
@@ -232,7 +232,7 @@ function addInventory(){
             };
 
 
-// if everything is confirmed, update the database
+// ========================================== if everything is confirmed, update the database ==========================================
             function update(){
                 newInventory = currentQuantity + updateQuantity;
 
