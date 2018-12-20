@@ -15,3 +15,5 @@ In order to call on Bamazon, run the file Bamazoncustomer.js, Bamazonmanager.js 
 * node.js
 * Javascript
 * MySQL
+![picture](bamazoncustomer.png)
+![picture](bamazonmanager.png)
