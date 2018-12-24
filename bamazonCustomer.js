@@ -73,7 +73,7 @@ function promptCustomer(){
             var itemCost;
             var total;
             var updateQuantity;
-            
+            var productSales = 0;
             if (itemNum <= itemLength && itemNum > 0){
 
                 connection.query("SELECT * FROM products", function(err, res) {
@@ -84,6 +84,7 @@ function promptCustomer(){
                             currentQuantity = res[i].stock_quantity;
                             itemCost = res[i].price;
                             itemName = res[i].product_name;
+                            productSales =res[i].product_sales;
                         }
                     }
 
@@ -128,12 +129,13 @@ function promptCustomer(){
 
                 function update(){
                     updateQuantity = currentQuantity - quantity;
-
+                    var newProductSales = productSales + total
                     connection.query(
                         "UPDATE products SET ? WHERE ?",
                         [
                             {
-                                stock_quantity: updateQuantity
+                                stock_quantity: updateQuantity,
+                                product_sales: newProductSales
                             },
                             {
                                 item_id: itemNum
