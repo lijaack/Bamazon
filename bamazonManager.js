@@ -311,6 +311,28 @@ function addNewProduct(){
             var quantity = response.quantity;
             var cost = response.cost;
             var department = response.department;
+
+            connection.query(
+                "INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ('" + itemName + "', '" + department + "', " + cost + ", " + quantity + ")",              
+                function(err, res) {
+                    if (err) throw err;
+
+                    inquirer.prompt([
+                        {
+                            type: "confirm",
+                            name: "doAgain",
+                            message: "Your product has been successfully added. Would you like to do something else?",
+                  
+                        }
+                    ]).then(function(response){
+                        if (response.doAgain){
+                        promptManager();
+                        } else {
+                        connection.end();
+                        };
+                
+                    });
+            });
         });
 
 }
