@@ -285,8 +285,32 @@ function addInventory(){
 
 //========================================================================== add new product===========================================================================================
 function addNewProduct(){
-
-
-
+    inquirer.prompt([
+        {
+          type:"input",
+          name:"itemName",
+          message:"What product would you like to add?"
+        },
+        {
+          type:"input",
+          name:"quantity",
+          message:"How many would you like to add?"
+        },
+        {
+          type:"input",
+          name:"cost",
+          message:"What is the cost of this product?"
+        },
+        {
+          type:"input",
+          name:"department",
+          message:"What department do you want to add this product to?"
+        }
+        ]).then(function(response){
+            var itemName = response.itemName;
+            var quantity = response.quantity;
+            var cost = response.cost;
+            var department = response.department;
+        });
 
 }
